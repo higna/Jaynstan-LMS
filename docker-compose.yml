@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: jaynstan-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: jaynstan
+      POSTGRES_PASSWORD: jaynstan_dev
+      POSTGRES_DB: jaynstan_lms
+    ports:
+      - "4555:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jaynstan -d jaynstan_lms"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: jaynstan-redis
+    restart: unless-stopped
+    ports:
+      - "4560:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+  redis_data:
